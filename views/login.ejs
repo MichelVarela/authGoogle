@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- google auth -->
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="212170639708-fq2hj9fi1qm5nf8pt5m9dbll7ja8h69a.apps.googleusercontent.com">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <div class="g-signin2" data-onsuccess="onSignIn"></div>
+    
+    <a href="/logout" onclick="signOut();">Sign out</a>
+    
+    <script>
+        function onSignIn(googleUser) {
+            var id_token = googleUser.getAuthResponse().id_token;/* token que contiene los datos del profile */
+            
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/login');/* ruta la cual va a recibir los datos */
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onload = function() {
+                console.log('Signed in as: ' + xhr.responseText);
+                if(xhr.responseText == 'success'){
+                    signOut();
+                    location.assign('/dashboard')/* cuando me loguee me redirija a /dashboard = profile */
+                }
+            };
+            xhr.send(JSON.stringify({token: id_token}));/* enviamos como json el id_token que obtuvimos de google */
+        }
+    </script>
+    <script>
+        function signOut() {
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                console.log('User signed out.');
+            });
+        }
+    </script>
+</body>
+</html>
